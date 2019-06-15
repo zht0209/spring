@@ -82,16 +82,21 @@ public class StandardServletEnvironment extends StandardEnvironment implements C
 	 */
 	@Override
 	protected void customizePropertySources(MutablePropertySources propertySources) {
+		//加入servletContextInitParams servletConfigInitParams两个属性 ps.StubPropertySource是PropertySource的静态内部类
 		propertySources.addLast(new StubPropertySource(SERVLET_CONFIG_PROPERTY_SOURCE_NAME));
 		propertySources.addLast(new StubPropertySource(SERVLET_CONTEXT_PROPERTY_SOURCE_NAME));
+		//默认返回FALSE,需要增加jndi属性,如果不想加入jndi相关东西,自己在resource目录下加入spring.properties文件,里面加入spring.jndi.ignore=true,因为初始化SpringProperties时会从该文件读取配置文件存入key为spring.jndi.ignore,value=true.默认没有这个文件,即使读取不到也不报错,返回false
 		if (JndiLocatorDelegate.isDefaultJndiEnvironmentAvailable()) {
 			propertySources.addLast(new JndiPropertySource(JNDI_PROPERTY_SOURCE_NAME));
 		}
+		//调用父类StandardEnvironment的方法,增加systemProperties systemEnvironment两个属性
+		//顺带提一句,MutablePropertySources#addLast(PropertySource)是同步的,保证了并发修改下也能正常读取,该类里面持有了类型为CopyOnWriteArrayList的属性
 		super.customizePropertySources(propertySources);
 	}
 
 	@Override
 	public void initPropertySources(@Nullable ServletContext servletContext, @Nullable ServletConfig servletConfig) {
+		//将servletContextInitParams servletConfigInitParams两个属性分别转成ServletContextPropertySource和ServletConfigPropertySource类型
 		WebApplicationContextUtils.initServletPropertySources(getPropertySources(), servletContext, servletConfig);
 	}
 

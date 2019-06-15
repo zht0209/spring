@@ -158,6 +158,7 @@ public abstract class AbstractRefreshableWebApplicationContext extends AbstractR
 	 */
 	@Override
 	protected ConfigurableEnvironment createEnvironment() {
+		//初始化StandardServletEnvironment的时候,会初始化父类AbstractEnvironment的无参构造方法,里面会调用#customizePropertySources(MutablePropertySources)方法,StandardServletEnvironment重写了该方法,所以实际调用的是StandardServletEnvironment中的#customizePropertySources(MutablePropertySources)方法
 		return new StandardServletEnvironment();
 	}
 

@@ -99,6 +99,7 @@ public abstract class AbstractRefreshableWebApplicationContext extends AbstractR
 
 
 	public AbstractRefreshableWebApplicationContext() {
+		//当通过反射创建web容器实例时,eg.XmlWebApplicationContext,先初始化父类构造函数,在此设置displayName=Root WebApplicationContext
 		setDisplayName("Root WebApplicationContext");
 	}
 
@@ -172,6 +173,7 @@ public abstract class AbstractRefreshableWebApplicationContext extends AbstractR
 		beanFactory.ignoreDependencyInterface(ServletConfigAware.class);
 
 		WebApplicationContextUtils.registerWebApplicationScopes(beanFactory, this.servletContext);
+		//主要是注册一些web容器的初始化参数
 		WebApplicationContextUtils.registerEnvironmentBeans(beanFactory, this.servletContext, this.servletConfig);
 	}
 
@@ -208,6 +210,7 @@ public abstract class AbstractRefreshableWebApplicationContext extends AbstractR
 	 */
 	@Override
 	protected void initPropertySources() {
+		//ContextLoader中调用一次,refresh方法中调用一次
 		ConfigurableEnvironment env = getEnvironment();
 		if (env instanceof ConfigurableWebEnvironment) {
 			((ConfigurableWebEnvironment) env).initPropertySources(this.servletContext, this.servletConfig);

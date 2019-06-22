@@ -147,9 +147,10 @@ public abstract class AnnotationConfigUtils {
 	 */
 	public static Set<BeanDefinitionHolder> registerAnnotationConfigProcessors(
 			BeanDefinitionRegistry registry, @Nullable Object source) {
-
+		//这里的入参其实就是DefaultListableBeanFactory类型,现在强制返回该类型
 		DefaultListableBeanFactory beanFactory = unwrapDefaultListableBeanFactory(registry);
 		if (beanFactory != null) {
+			//对实现了Ordered接口的实现排序,order越大优先级越低
 			if (!(beanFactory.getDependencyComparator() instanceof AnnotationAwareOrderComparator)) {
 				beanFactory.setDependencyComparator(AnnotationAwareOrderComparator.INSTANCE);
 			}
@@ -160,9 +161,18 @@ public abstract class AnnotationConfigUtils {
 
 		Set<BeanDefinitionHolder> beanDefs = new LinkedHashSet<>(8);
 
+		/*
+		ConfigurationClassPostProcessor
+		AutowiredAnnotationBeanPostProcessor
+		CommonAnnotationBeanPostProcessor
+		PersistenceAnnotationBeanPostProcessor
+		EventListenerMethodProcessor
+		DefaultEventListenerFactory
+		 */
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
 			def.setSource(source);
+			//注册Bean并返回该Bean的BeanDefinitionHolder持有,加入集合
 			beanDefs.add(registerPostProcessor(registry, def, CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME));
 		}
 
@@ -173,6 +183,7 @@ public abstract class AnnotationConfigUtils {
 		}
 
 		// Check for JSR-250 support, and if present add the CommonAnnotationBeanPostProcessor.
+		//jsr250Present和jpaPresent 在类加载时初始化,具体是javax.annotation.Resource,javax.persistence.EntityManagerFactory和PersistenceAnnotationBeanPostProcessor,在这里我们可以看出@resource的处理其实是在CommonAnnotationBeanPostProcessor这个后置处理器中完成的
 		if (jsr250Present && !registry.containsBeanDefinition(COMMON_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(CommonAnnotationBeanPostProcessor.class);
 			def.setSource(source);
@@ -211,8 +222,9 @@ public abstract class AnnotationConfigUtils {
 
 	private static BeanDefinitionHolder registerPostProcessor(
 			BeanDefinitionRegistry registry, RootBeanDefinition definition, String beanName) {
-
+		//这了role=2表示与用户无关的bean,只为处理spring内部的东西,0表示用户的Bean,1表示重要配置的Bean,是某个较大配置的一部分,默认是0
 		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		//注册Bean
 		registry.registerBeanDefinition(beanName, definition);
 		return new BeanDefinitionHolder(definition, beanName);
 	}

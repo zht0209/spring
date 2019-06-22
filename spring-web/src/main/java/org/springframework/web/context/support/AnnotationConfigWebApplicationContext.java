@@ -192,7 +192,9 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 	 */
 	@Override
 	protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) {
+		//主要是注册@Autowire等注解的后置处理器,关键点在AnnotationConfigUtils#registerAnnotationConfigProcessors
 		AnnotatedBeanDefinitionReader reader = getAnnotatedBeanDefinitionReader(beanFactory);
+		//注册默认的一些注解,eg.@Component,@Repository,@@Service,@Controller,后面几个其实都有@Component这个元注解加持,还注册了一些JSR250,330的东西,@Named之类的
 		ClassPathBeanDefinitionScanner scanner = getClassPathBeanDefinitionScanner(beanFactory);
 
 		BeanNameGenerator beanNameGenerator = getBeanNameGenerator();

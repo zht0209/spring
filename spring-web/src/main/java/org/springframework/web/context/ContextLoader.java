@@ -366,7 +366,7 @@ public class ContextLoader {
 	protected WebApplicationContext createWebApplicationContext(ServletContext sc) {
 		//返回WebApplicationContext的默认实现类或者自定义实现类的class对象,
 		Class<?> contextClass = determineContextClass(sc);
-		//isAssignableFrom方法是navite本地方法,如果contextClass是ConfigurableWebApplicationContext.class的子类或者子接口,则返回TRUE
+		//isAssignableFrom方法是native本地方法,如果contextClass是ConfigurableWebApplicationContext.class的子类或者子接口,则返回TRUE
 		if (!ConfigurableWebApplicationContext.class.isAssignableFrom(contextClass)) {
 			throw new ApplicationContextException("Custom context class [" + contextClass.getName() +
 					"] is not of type [" + ConfigurableWebApplicationContext.class.getName() + "]");

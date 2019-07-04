@@ -119,6 +119,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+//注册AnnotationAwareAspectJAutoProxyCreator类,本质是BeanPostProcessor,主要是SmartInstantiationAwareBeanPostProcessor这个接口被实现
 @Import(AspectJAutoProxyRegistrar.class)
 public @interface EnableAspectJAutoProxy {
 
@@ -126,6 +127,7 @@ public @interface EnableAspectJAutoProxy {
 	 * Indicate whether subclass-based (CGLIB) proxies are to be created as opposed
 	 * to standard Java interface-based proxies. The default is {@code false}.
 	 */
+	//默认是基于jdk动态代理+CGLIB代理模式,TRUE表示只用CGLIB代理模式
 	boolean proxyTargetClass() default false;
 
 	/**
@@ -134,6 +136,7 @@ public @interface EnableAspectJAutoProxy {
 	 * Off by default, i.e. no guarantees that {@code AopContext} access will work.
 	 * @since 4.3.1
 	 */
+	//默认不暴露代理类,true表示会将代理类暴露放到ThreadLocal中,可通过AopContext#currentProxy()方法调用处理方法内部this调用本类方法启动代理
 	boolean exposeProxy() default false;
 
 }

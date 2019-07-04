@@ -148,6 +148,7 @@ public abstract class AnnotationConfigUtils {
 	public static Set<BeanDefinitionHolder> registerAnnotationConfigProcessors(
 			BeanDefinitionRegistry registry, @Nullable Object source) {
 		//这里的入参其实就是DefaultListableBeanFactory类型,现在强制返回该类型
+		// TODO: 2019-07-04 也有可能入参是GenericApplicationContext类型
 		DefaultListableBeanFactory beanFactory = unwrapDefaultListableBeanFactory(registry);
 		if (beanFactory != null) {
 			//对实现了Ordered接口的实现排序,order越大优先级越低

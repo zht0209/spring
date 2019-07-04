@@ -71,8 +71,10 @@ public class QualifierAnnotationAutowireCandidateResolver extends GenericTypeAwa
 	 */
 	@SuppressWarnings("unchecked")
 	public QualifierAnnotationAutowireCandidateResolver() {
+		//将spring的Qualifier注解加入
 		this.qualifierTypes.add(Qualifier.class);
 		try {
+			//如果类路径下有JSR330的Qualifier,也将其加入
 			this.qualifierTypes.add((Class<? extends Annotation>) ClassUtils.forName("javax.inject.Qualifier",
 							QualifierAnnotationAutowireCandidateResolver.class.getClassLoader()));
 		}

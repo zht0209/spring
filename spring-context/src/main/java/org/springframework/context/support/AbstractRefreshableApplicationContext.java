@@ -129,9 +129,11 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 			closeBeanFactory();
 		}
 		try {
-			//beanFactory为空则新创建一个beanFactory
+			//beanFactory为空则新创建一个beanFactory,DefaultListableBeanFactory初始化时只进行了将BeanNameAware BeanFactoryAware BeanClassLoaderAware加入ignoredDependencyInterfaces中,以及设置父容器
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
+			//设置DefaultListableBeanFactory的序列化ID,并放入到 Map<String, Reference<DefaultListableBeanFactory>> serializableFactories中
 			beanFactory.setSerializationId(getId());
+			//定制化DefaultListableBeanFactory,设置是否自动解析循环引用,设置是否允许覆盖相同命名的Bean定义
 			customizeBeanFactory(beanFactory);
 			//加载Bean定义,先进入AnnotationConfigWebApplicationContext实现类看看,有兴趣再看XmlWebApplicationContext的实现
 			loadBeanDefinitions(beanFactory);

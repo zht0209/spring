@@ -124,6 +124,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	static {
 		try {
+			//默认从类路径下加载javax.inject.Provider,如果加载到,可以使用JSR-330的依赖注入的东西,eg:@Inject、@Named
 			javaxInjectProviderClass =
 					ClassUtils.forName("javax.inject.Provider", DefaultListableBeanFactory.class.getClassLoader());
 		}
@@ -916,7 +917,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			this.beanDefinitionMap.put(beanName, beanDefinition);
 		}
 		else {
-			//是否已经创建过一次Bean
+			//表示改DefaultListableBeanFactory是否已经创建过Bean
 			if (hasBeanCreationStarted()) {
 				// Cannot modify startup-time collection elements anymore (for stable iteration)
 				synchronized (this.beanDefinitionMap) {
@@ -927,7 +928,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 					updatedDefinitions.addAll(this.beanDefinitionNames);
 					updatedDefinitions.add(beanName);
 					this.beanDefinitionNames = updatedDefinitions;
-					//搞不太懂这个具体干嘛
+					//更新工厂内部的手动单例Bean
 					removeManualSingletonName(beanName);
 				}
 			}

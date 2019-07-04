@@ -171,7 +171,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 */
 	public AbstractAutowireCapableBeanFactory() {
 		super();
-		//this.ignoredDependencyInterfaces.add(); 将BeanNameAware BeanFactoryAware BeanClassLoaderAware这三个加入
+		// 将BeanNameAware BeanFactoryAware BeanClassLoaderAware这三个加入到成员变量ignoredDependencyInterfaces中
+		// TODO: 2019-07-04 ignoredDependencyInterfaces有啥作用?
 		ignoreDependencyInterface(BeanNameAware.class);
 		ignoreDependencyInterface(BeanFactoryAware.class);
 		ignoreDependencyInterface(BeanClassLoaderAware.class);
@@ -183,6 +184,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 */
 	public AbstractAutowireCapableBeanFactory(@Nullable BeanFactory parentBeanFactory) {
 		this();
+		//设置父类AbstractBeanFactory的成员变量parentBeanFactory
 		setParentBeanFactory(parentBeanFactory);
 	}
 

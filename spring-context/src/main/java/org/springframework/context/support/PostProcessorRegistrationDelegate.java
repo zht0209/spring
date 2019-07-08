@@ -51,19 +51,26 @@ final class PostProcessorRegistrationDelegate {
 	private PostProcessorRegistrationDelegate() {
 	}
 
-
+	/*
+	总结:BeanFactoryPostProcessors后置处理器的回调.先执行实现了BeanDefinitionRegistryPostProcessor的回调方法postProcessBeanDefinitionRegistry,优先级最高的实现了PriorityOrdered的,其次是Ordered,最后才是常规的BeanDefinitionRegistryPostProcessor
+	然后再执行BeanFactoryPostProcessors的回调方法postProcessBeanFactory,优先级同上
+	有料的东西都在实现了BeanDefinitionRegistryPostProcessor或者BeanFactoryPostProcessors的类里面,碰到再说
+	 */
 	public static void invokeBeanFactoryPostProcessors(
 			ConfigurableListableBeanFactory beanFactory, List<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
 
 		// Invoke BeanDefinitionRegistryPostProcessors first, if any.
 		Set<String> processedBeans = new HashSet<>();
 
+		//一般来说默认的Bean工厂就是DefaultListableBeanFactory,实现了BeanDefinitionRegistry
 		if (beanFactory instanceof BeanDefinitionRegistry) {
 			BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
+			//这里分为常规的beanfactory后置处理器和BeanDefinitionRegistry后置处理器,BeanDefinitionRegistryPostProcessor其实是BeanFactoryPostProcessor的子接口
 			List<BeanFactoryPostProcessor> regularPostProcessors = new ArrayList<>();
 			List<BeanDefinitionRegistryPostProcessor> registryProcessors = new ArrayList<>();
 
 			for (BeanFactoryPostProcessor postProcessor : beanFactoryPostProcessors) {
+				//如果已有的工厂后置处理器是BeanDefinitionRegistryPostProcessor的实例,则进行扩展执行该接口的postProcessBeanDefinitionRegistry方法,并加入到局部变量List<BeanDefinitionRegistryPostProcessor> registryProcessors中,否则加入局部变量常规的工厂后置处理器集合中,这里有个重要的工厂后置处理器ConfigurationClassPostProcessor
 				if (postProcessor instanceof BeanDefinitionRegistryPostProcessor) {
 					BeanDefinitionRegistryPostProcessor registryProcessor =
 							(BeanDefinitionRegistryPostProcessor) postProcessor;
@@ -92,6 +99,7 @@ final class PostProcessorRegistrationDelegate {
 			}
 			sortPostProcessors(currentRegistryProcessors, beanFactory);
 			registryProcessors.addAll(currentRegistryProcessors);
+			//执行每个实现了BeanDefinitionRegistryPostProcessor后置处理器的postProcessBeanDefinitionRegistry方法
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
 			currentRegistryProcessors.clear();
 
@@ -127,6 +135,7 @@ final class PostProcessorRegistrationDelegate {
 			}
 
 			// Now, invoke the postProcessBeanFactory callback of all processors handled so far.
+			//执行每个工厂后置处理器的postProcessBeanFactory方法
 			invokeBeanFactoryPostProcessors(registryProcessors, beanFactory);
 			invokeBeanFactoryPostProcessors(regularPostProcessors, beanFactory);
 		}

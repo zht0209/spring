@@ -504,6 +504,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
+			/*
+				主要是遍历所有的Bean后置处理器先调用postProcessBeforeInstantiation()方法,再调用postProcessAfterInitialization()方法
+			 */
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;
@@ -515,6 +518,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		try {
+			//如果resolveBeforeInstantiation(beanName, mbdToUse);方法没返回代理对象,则继续调用创建Bean的实例方法
 			Object beanInstance = doCreateBean(beanName, mbdToUse, args);
 			if (logger.isTraceEnabled()) {
 				logger.trace("Finished creating instance of bean '" + beanName + "'");
@@ -1097,8 +1101,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 				Class<?> targetType = determineTargetType(beanName, mbd);
 				if (targetType != null) {
+					//Bean创建前调用postProcessBeforeInstantiation方法
 					bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
 					if (bean != null) {
+						//创建之后调用BeanPostProcessorsAfterInitialization方法,注意Instantiation和Initialization不一样
 						bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
 					}
 				}
@@ -1121,6 +1127,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 */
 	@Nullable
 	protected Object applyBeanPostProcessorsBeforeInstantiation(Class<?> beanClass, String beanName) {
+		/*
+			在Bean创建之前,先调用一波BeanPostProcessor的子接口InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation()回调方法,这里有个重要的类
+			AbstractAutoProxyCreator,spring aop就是在这里返回代理,并作为真正的Bean实例
+		 */
+		// TODO: 2019-07-08 AbstractAutoProxyCreator#postProcessBeforeInstantiation() 之后再看
 		for (BeanPostProcessor bp : getBeanPostProcessors()) {
 			if (bp instanceof InstantiationAwareBeanPostProcessor) {
 				InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;

@@ -138,10 +138,12 @@ class ConfigurationClassBeanDefinitionReader {
 			registerBeanDefinitionForImportedConfigurationClass(configClass);
 		}
 		for (BeanMethod beanMethod : configClass.getBeanMethods()) {
+			//处理配置类的中@Bean的东西,加载Bean定义信息
 			loadBeanDefinitionsForBeanMethod(beanMethod);
 		}
-
+		//处理@importResource注解的东西
 		loadBeanDefinitionsFromImportedResources(configClass.getImportedResources());
+		//处理@Import注解
 		loadBeanDefinitionsFromRegistrars(configClass.getImportBeanDefinitionRegistrars());
 	}
 
